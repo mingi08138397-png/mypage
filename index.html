@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mingi08138397-png · repos</title>
+<style>
+  :root{
+    --ink: #14151A;
+    --ink-2: #1B1D24;
+    --line: #2A2D37;
+    --text: #E7E6E2;
+    --text-dim: #8B8E9C;
+    --amber: #E8A33D;
+    --amber-dim: #7A5A26;
+    --mono: 'JetBrains Mono', 'Space Mono', 'Courier New', monospace;
+    --sans: 'IBM Plex Sans', -apple-system, sans-serif;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  body{
+    background: var(--ink);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 64px 24px 100px;
+  }
+
+  /* ---- 헤더: 터미널 프롬프트 ---- */
+  header{
+    margin-bottom: 56px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 32px;
+  }
+
+  .prompt{
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+  .prompt .sym{ color: var(--amber); }
+
+  h1{
+    font-family: var(--mono);
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .cursor{
+    display:inline-block;
+    width: 12px; height: 0.9em;
+    background: var(--amber);
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink{ 50%{ opacity: 0; } }
+
+  .sub{
+    margin-top: 12px;
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 60ch;
+  }
+
+  .status{
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 20px;
+  }
+  .status.error{ color: #D9695F; }
+
+  /* ---- 카드 그리드 ---- */
+  .grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .card{
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 22px 22px 20px;
+    cursor: pointer;
+    text-align: left;
+    color: inherit;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transition: border-color .18s ease, transform .18s ease, background .18s ease;
+  }
+  .card:hover, .card:focus-visible{
+    border-color: var(--amber-dim);
+    background: #20222C;
+    transform: translateY(-3px);
+  }
+  .card:focus-visible{ outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .card .path{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .card .path .sym{ color: var(--amber); }
+
+  .card .name{
+    font-family: var(--mono);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    word-break: break-word;
+  }
+
+  .card .desc{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card .meta{
+    display:flex;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+  .card .meta .dot{
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber);
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  .empty{
+    font-family: var(--mono);
+    color: var(--text-dim);
+    font-size: 14px;
+    padding: 40px 0;
+  }
+
+  /* skeleton loading */
+  .skeleton{
+    background: var(--ink-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    height: 140px;
+    position: relative;
+    overflow: hidden;
+  }
+  .skeleton::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(90deg, transparent, rgba(232,163,61,0.06), transparent);
+    animation: shimmer 1.4s infinite;
+  }
+  @keyframes shimmer{
+    0%{ transform: translateX(-100%); }
+    100%{ transform: translateX(100%); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .cursor, .skeleton::after{ animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="prompt"><span class="sym">$</span> whoami</div>
+    <h1>mingi08138397-png<span class="cursor"></span></h1>
+    <p class="sub">공개 저장소 목록입니다. 카드를 클릭하면 해당 프로젝트의 GitHub Pages로 이동합니다.</p>
+    <div class="status" id="status">불러오는 중…</div>
+  </header>
+
+  <div class="grid" id="grid">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+</div>
+
+<script>
+  const USERNAME = 'mingi08138397-png';
+  const PORTFOLIO_REPO = `${USERNAME}.github.io`; // 이 포트폴리오 저장소 자신은 목록에서 제외
+
+  const grid = document.getElementById('grid');
+  const statusEl = document.getElementById('status');
+
+  function timeAgo(dateStr){
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const day = 1000 * 60 * 60 * 24;
+    const days = Math.floor(diff / day);
+    if (days < 1) return 'today';
+    if (days < 30) return `${days}d ago`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}mo ago`;
+    return `${Math.floor(months/12)}y ago`;
+  }
+
+  function renderCards(repos){
+    grid.innerHTML = '';
+
+    if (repos.length === 0){
+      grid.innerHTML = `<div class="empty">// 표시할 저장소가 없습니다</div>`;
+      return;
+    }
+
+    repos.forEach(repo => {
+      const card = document.createElement('button');
+      card.className = 'card';
+      card.type = 'button';
+
+      const desc = repo.description ? repo.description : '설명이 없습니다.';
+
+      card.innerHTML = `
+        <div class="path"><span class="sym">~/</span>${repo.name}</div>
+        <div class="name">${repo.name}</div>
+        <div class="desc">${desc}</div>
+        <div class="meta">
+          <span>${repo.language ? repo.language : '—'}</span>
+          <span><span class="dot"></span>★ ${repo.stargazers_count}</span>
+          <span>${timeAgo(repo.pushed_at)}</span>
+        </div>
+      `;
+
+      card.addEventListener('click', () => {
+        window.location.href = `https://${USERNAME}.github.io/${repo.name}/`;
+      });
+
+      grid.appendChild(card);
+    });
+  }
+
+  async function loadRepos(){
+    try{
+      const res = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
+      if (!res.ok){
+        throw new Error(`GitHub API 응답 오류 (${res.status})`);
+      }
+      const data = await res.json();
+
+      const filtered = data.filter(repo =>
+        repo.name.toLowerCase() !== PORTFOLIO_REPO.toLowerCase()
+      );
+
+      statusEl.textContent = `총 ${filtered.length}개 저장소`;
+      renderCards(filtered);
+
+    } catch (err){
+      statusEl.textContent = `불러오기 실패: ${err.message}`;
+      statusEl.classList.add('error');
+      grid.innerHTML = `<div class="empty">// 저장소 목록을 불러오지 못했습니다. 네트워크 상태나 GitHub API 요청 한도를 확인해 주세요.</div>`;
+    }
+  }
+
+  loadRepos();
+</script>
+
+</body>
+</html>
